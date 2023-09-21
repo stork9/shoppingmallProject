@@ -1,0 +1,384 @@
+<!DOCTYPE HTML>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<title>1조 쇼핑몰</title>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="/assets/css/main.css" />
+	<noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
+	<script>
+		$('#bgSearchBar').hide();
+		$(document).ready( function() {
+			$( 'li.search_icon' ).click( function() {
+				$( 'div.search_bar' ).toggle( 'slow' );
+			});
+		});
+	</script>
+
+</head>
+
+<style>
+	.images{
+;		padding: 0px;
+		width: 70px;
+		height: 100px
+	}
+	.products_type{
+		text-align: left;
+	}
+
+	table{
+		margin-left: 10px;
+		width: 1150px;
+	}
+	.products{
+		background: #e2e2e2;
+	}
+	thead{
+		background: #eeeeee;
+		text-align:center;
+	}
+
+	td{
+		font-size: 20px;
+	}
+
+	tr,th,td{
+		text-align:center;
+	}
+
+	.cart_products{
+		width: auto;
+		background-color:white;
+	}
+
+	tfoot{
+		text-align: right;
+		background: #eeeeee;
+
+	}
+	.col-12{
+		text-align: center;
+		margin: auto;
+	}
+
+	.search_bar{
+		margin-top: 10px;
+		margin-right: 10px;
+	}
+
+	.jb-box{width:100%; height:500px; overflow:hidden; margin:0 auto; position:relative;}
+	video{width:100%;}
+	.jb-text{position:absolute; top:50%; width:50%;}
+	.jb-text p{margin-top:-24px; text-align:center; font-size:48px; color:#fff;}
+
+	.cart_process {
+		width: auto;
+		margin: auto;
+		margin-left: 0px;
+		font-size: 13px;
+	}
+
+	.totalPrice{
+		text-align: right;
+	}
+
+
+</style>
+<script>
+	// 체크박스 데이터 받아오기 위한 익명 func
+	// 주문할 상품의 체크박스를 클릭 시 총 주문 금액을 받아옴 (체크하면 +, 헤제하면 -)
+	$(document).ready(function() {
+		// Toggle search bar
+		$('li.search_icon').click(function() {
+			$('div.search_bar').toggle('slow');
+		});
+
+		// Handle checkbox change event
+		$(".cartChkBox").change(function() {
+			getOrderTotalPrice();
+		});
+
+		// Check/uncheck all checkboxes
+		$("#checkall").change(function() {
+			$("input[name=cartChkBox]").prop("checked", $(this).prop("checked"));
+			getOrderTotalPrice();
+		});
+	});
+
+	function getOrderTotalPrice() {
+		var orderTotalPrice = 0;
+		$(".cartChkBox:checked").each(function() {
+			var cartItemId = $(this).val();
+			var price = parseFloat($("#price_" + cartItemId).attr("data-price"));
+			var count = parseInt($("#count_" + cartItemId).val());
+			var totalPrice = price * count;
+			orderTotalPrice += totalPrice;
+		});
+
+		$("#orderTotalPrice").html(orderTotalPrice);
+	}
+
+
+
+	// 장바구니 안 상품 개수를 바꾸는 func
+	function changeCount(obj) {
+		var count = obj.value;
+		var cartItemId = obj.id.split('_')[1];
+		var price = parseFloat($("#price_" + cartItemId).text());
+		var totalPrice = count * price;
+		$("#totalPrice_" + cartItemId).html(totalPrice + "원");
+		getOrderTotalPrice();
+		updateCartItemCount(cartItemId, count);
+	}
+
+	// 체크박스 데이터 받아오기 위한 func
+	function checkAll(){
+		if($("#checkall").prop("checked")){
+			$("input[name=cartChkBox]").prop("checked",true);
+		}else{
+			$("input[name=cartChkBox]").prop("checked",false);
+		}
+		getOrderTotalPrice(); // 여기서 체크된 아이템들의 총 주문 금액 구하는 func 호출
+	}
+
+	// 장바구니 상품 개수 수정
+	function updateCartItemCount(cartItemId, count){
+
+		var url = "/user/cartItem/" + cartItemId+"?count=" + count;
+
+		$.ajax({
+			url      : url,
+			type     : "PATCH",
+			dataType : "application/json",
+			success  : function(result, status){
+				console.log("cartItem count update success");
+			}
+		});
+	}
+
+	// 카트에 있는 아이템 제거
+	function deleteCartItem(cartItemId) {
+		var url = "/user/cartItem/" + cartItemId;
+
+		$.ajax({
+			url: url,
+			type: "DELETE",
+			dataType: "json",
+			success: function (result, status) {
+				alert('상품 삭제 완료');
+				location.href = '/user/cartPage';
+			}
+		});
+	}
+</script>
+
+<script th:inline="javascript">
+	var IMP = window.IMP;
+	function requestPay(){
+		var totalPrice = document.getElementById('orderTotalPrice').innerText;
+		var today = new Date();
+		var hours = today.getHours(); // 시
+		var minutes = today.getMinutes();  // 분
+		var seconds = today.getSeconds();  // 초
+		var milliseconds = today.getMilliseconds();
+		// 주문 고유번호 만들기
+		var makeMerchantUid = hours +  minutes + seconds + milliseconds;
+		IMP.init("imp84588633");
+		IMP.request_pay({
+			pg: "kcp",
+			merchant_uid: IMP+makeMerchantUid,   // 주문번호
+			name: "1조 쇼핑몰",
+			amount: totalPrice,                         // 숫자 타입
+			buyer_email: `[[${member.email}]]`,
+			buyer_name: `[[${member.name}]]`,
+			buyer_tel: `[[${member.phone}]]`,
+			buyer_addr: `[[${member.sample4_detailAddress}]]`,
+			buyer_postcode: `[[${member.sample4_postcode}]]`
+		}, function (rsp) { // callback
+			//rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.
+			if(rsp.success){
+				alert("결제가 완료되었습니다!");
+			} else{
+				alert("결제를 취소하였습니다.");
+			}
+		});
+
+	}
+	function deleteCheckedItems() {
+		var checkedItems = $("input[name=cartChkBox]:checked");
+		if (checkedItems.length === 0) {
+			alert("삭제할 항목을 선택해주세요.");
+			return;
+		}
+
+		var confirmed = confirm("선택한 항목을 삭제하시겠습니까?");
+		if (!confirmed) {
+			return;
+		}
+
+		checkedItems.each(function() {
+			var cartItemId = $(this).val();
+			deleteCartItem(cartItemId);
+		});
+	}
+</script>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper" class="fade-in">
+
+	<!-- Intro -->
+	<div id="intro">
+		<!-- 메인동영상 -->
+		<div class="jb-box">
+			<video muted autoplay loop>
+				<source src="/videos/main.mp4" type="video/mp4">
+				<strong>For Your Fashion</strong>
+			</video>
+			<div class="jb-text">
+				<p>Lorem Ipsum Dolor</p>
+			</div>
+		</div>
+
+		<!--
+        <h1>1조<br />
+        쇼핑몰</h1>
+        <p>참고자료<br><a href="https://html5up.net%22%3Ehtml5up/</a></p>
+        -->
+
+		<ul class="actions">
+			<li><a href="#header" class="button icon solid solo fa-arrow-down scrolly">Continue</a></li>
+		</ul>
+	</div>
+
+	<!-- Header -->
+	<header id="header">
+		<a href="/api/itemList/0" class="logo"><img src="/images/logo.png" width="300px"></a>
+	</header>
+
+	<nav id="nav">
+		<ul class="links">
+			<li><a href="/api/itemList/0">메인</a></li>
+			<li><a href="/api/itemList/top/0">상의</a></li>
+			<li><a href="/api/itemList/bottom/0">하의</a></li>
+			<li><a href="/api/itemList/accessory/0">악세서리</a></li>
+			<li><a href="/admin/postItem" sec:authorize="hasRole('ROLE_ADMIN')">상품 등록하기</a></li>
+			<li><a href="/api/boardList">게시판</a></li>
+		</ul>
+		<script>
+			function showSearch(){
+				var icon = document.getElementById("searchIcon");
+				icon.innerHTML = '<form action="/api/searchList/0"><li id="searchIcon"><input type="text" id="itemName" name="itemName"></li></form>';
+			}
+		</script>
+		<ul class="icons">
+			<li id="searchIcon"><a href="javascript:void(0);" onclick="showSearch()"><span class="label"><img src="/images/search.png" alt="검색" style="width: 45px; height: 45px;"></span></a></li>
+			<li sec:authorize="isAnonymous()"><a href="/api/login" ><span class="label"><img src="/images/join.png" alt="로그인" style="width: 40px; height: 40px;"></span></a></li>
+			<li sec:authorize="isAuthenticated()"><a href="/user/mypage"><span class="label"><img src="/images/mypage.png" alt="마이페이지" style="width: 35px; height: 35px;"></span></a></li>
+			<li sec:authorize="isAuthenticated()"><a href="/user/logout"><span class="label"><img src="/images/logout.png" alt="로그아웃" style="width: 35px; height: 35px;"></span></a></li>
+			<li sec:authorize="isAuthenticated()"><a href="/user/cartPage"><span class="label"><img src="/images/cart.png" alt="장바구니" style="width: 35px; height: 35px;"></span></a></li>
+		</ul>
+	</nav>
+	<!-- Main -->
+	<div id="main">
+		<section class="post">
+			<!-- Table -->
+			<h2>장바구니</h2>
+			<hr />
+			<div class="cart_process">
+				<a href="#" class="button primary" id="cart_process1">&emsp;&emsp;&emsp;01 장바구니&emsp;&emsp;&emsp;</a>
+				<a href="#" class="button" id="cart_process2">&emsp;&emsp;02 주문서작성&emsp;&emsp;</a>
+				<a href="#" class="button" id="cart_process3">&emsp;&emsp;&emsp;03 결제완료&emsp;&emsp;&emsp;</a>
+				<a href="#" class="button" id="cart_process4">&emsp;&emsp;&emsp;04 주문완료&emsp;&emsp;&emsp;</a>
+			</div>
+			<div class="table-wrapper">
+
+				<table class="alt">
+					<thead>
+					<tr class="products">
+						<th class="products_type" colspan="10" th:text="'일반상품(' + ${cartItems.size()} + ')'"></th>
+					</tr>
+					<tr>
+						<th>
+							<input type="checkbox" id="checkall" onclick="checkAll()">
+							<label for="checkall">전체선택</label>
+						</th>
+						<th>이미지</th>
+						<th>상품명</th>
+						<th>판매가</th>
+						<th>수량</th>
+						<th>가격</th>
+						<th>선택</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr class="cart_products" th:each="cartItem : ${cartItems}">
+						<td>
+							<div class="col-6 col-12-small">
+								<input type="checkbox" name="cartChkBox" class="cartChkBox" th:id="'check_'+${cartItem.cartItemId}" th:value="${cartItem.cartItemId}" onclick="getOrderTotalPrice()">
+								<label th:for="'check_'+${cartItem.cartItemId}"></label>
+							</div>
+						</td>
+						<td><a th:href="'/api/itemOne/'+${cartItem.getItemId()}"><img th:src="@{${cartItem.getFilePath()}}" class="images"></a></td>
+						<td th:id="'title_' + ${cartItem.cartItemId}"><a th:href="'/api/itemOne/'+${cartItem.getItemId()}">[[${cartItem.title}]]</a> </td>
+						<td th:id="'price_' + ${cartItem.cartItemId}" th:data-price="${cartItem.price}" th:text="${cartItem.price}"></td>
+						<td>
+							<input type="number" name="count" th:id="'count_' + ${cartItem.cartItemId}" th:value="${cartItem.count}" min="1" onchange="changeCount(this)" style="width:100px">
+						</td>
+						<td th:id="'totalPrice_' + ${cartItem.cartItemId}" name="totalPrice" th:text="${cartItem.price * cartItem.count + '원'}"></td>
+						<td class="choose">
+							<input type="button" value="삭제" th:onclick="'deleteCartItem('+${cartItem.cartItemId}+')'">
+						</td>
+					</tr>
+
+					</tbody>
+					<tfoot>
+					<tr>
+						<td class="totalPrice" colspan="10">
+							총 주문 금액: <span id="orderTotalPrice">0</span>원
+						</td>
+					</tr>
+					</tfoot>
+				</table>
+
+			</div>
+
+			<div class="col-12">
+				<input type="button" value="구매하기" onclick="requestPay()">&emsp;
+				<input type="button" value="삭제하기" onclick="deleteCheckedItems()"/>
+			</div>
+		</section>
+	</div>
+
+
+
+
+	<!-- Copyright -->
+	<div id="copyright">
+		<ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+	</div>
+
+</div>
+</footer>
+<!-- Scripts -->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/jquery.scrollex.min.js"></script>
+<script src="/assets/js/jquery.scrolly.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script
+		type="text/javascript"
+		src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+</div>
+</body>
+</html>

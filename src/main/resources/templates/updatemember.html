@@ -1,0 +1,306 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!--
+   Massively by HTML5 UP
+   html5up.net | @ajlkn
+   Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+
+<head>
+  <title>1조 쇼핑몰</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+  <link rel="stylesheet" href="/assets/css/main.css"/>
+  <noscript>
+    <link rel="stylesheet" href="/assets/css/noscript.css"/>
+  </noscript>
+</head>
+<style>
+  .description {
+    font-size: 13px; /* 적절한 크기로 조정하세요 */
+  }
+
+  .auth {
+    border: max(2px, 0.1em) solid gray;
+    border-radius: 50%;
+    width: 1.25em;
+    height: 1.25em;
+  }
+
+  .auth:checked {
+    border: 0.4em solid tomato;
+  }
+
+  .auth:focus-visible {
+    outline: max(2px, 0.1em) dotted tomato;
+    outline-offset: max(2px, 0.1em);
+  }
+
+  .auth:hover {
+    box-shadow: 0 0 0 max(4px, 0.2em) lightgray;
+    cursor: pointer;
+  }
+
+  .auth:hover + span {
+    cursor: pointer;
+  }
+</style>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper" class="fade-in">
+
+  <!-- Intro -->
+  <div id="intro">
+    <h1>1조<br/>
+      쇼핑몰</h1>
+    <p>참고자료<br><a href="https://html5up.net">html5up</a></p>
+    <ul class="actions">
+      <li><a href="#header" class="button icon solid solo fa-arrow-down scrolly">Continue</a></li>
+    </ul>
+  </div>
+
+  <!-- Header -->
+  <header id="header">
+    <a href="/api/itemList/0" class="logo"><img src="/images/logo.png" width="300px"></a>
+  </header>
+
+  <nav id="nav">
+    <ul class="links">
+      <li><a href="/api/itemList/0">메인</a></li>
+      <li><a href="/api/itemList/top/0">상의</a></li>
+      <li><a href="/api/itemList/bottom/0">하의</a></li>
+      <li><a href="/api/itemList/accessory/0">악세서리</a></li>
+      <li><a href="/admin/postItem" sec:authorize="hasRole('ROLE_ADMIN')">상품 등록하기</a></li>
+      <li><a href="/api/boardList">게시판</a></li>
+    </ul>
+    <script>
+      function showSearch(){
+        var icon = document.getElementById("searchIcon");
+        icon.innerHTML = '<form action="/api/searchList/0"><li id="searchIcon"><input type="text" id="itemName" name="itemName"></li></form>';
+      }
+    </script>
+    <ul class="icons">
+      <li id="searchIcon"><a href="javascript:void(0);" onclick="showSearch()"><span class="label"><img src="/images/search.png" alt="검색" style="width: 45px; height: 45px;"></span></a></li>
+      <li sec:authorize="isAnonymous()"><a href="/api/login" ><span class="label"><img src="/images/join.png" alt="로그인" style="width: 40px; height: 40px;"></span></a></li>
+      <li sec:authorize="isAuthenticated()"><a href="/user/mypage"><span class="label"><img src="/images/mypage.png" alt="마이페이지" style="width: 35px; height: 35px;"></span></a></li>
+      <li sec:authorize="isAuthenticated()"><a href="/user/logout"><span class="label"><img src="/images/logout.png" alt="로그아웃" style="width: 35px; height: 35px;"></span></a></li>
+      <li sec:authorize="isAuthenticated()"><a href="/user/cartPage"><span class="label"><img src="/images/cart.png" alt="장바구니" style="width: 35px; height: 35px;"></span></a></li>
+    </ul>
+  </nav>
+
+
+  <!-- Main -->
+  <div id="main">
+    <!-- Featured Post -->
+    <form class="update-form" name="updateForm" action="/user/updatemember" method="POST">
+
+      <div class="fields">
+        <div class="field">
+          <label for="userId">아이디</label>
+          <input type="text" name="userId" id="userId" th:value="${userId}" readonly/>
+          <div class="error-message"></div>
+        </div>
+        <div class="field">
+          <label for="password">비밀번호</label>
+          <input type="password" name="password" id="password" th:value="${password}"/>
+        </div>
+        <div class="field">
+          <label for="passwordCheck">비밀번호 확인</label>
+          <input type="password" name="passwordCheck" id="passwordCheck"  />
+          <span class="error-message"></span>
+        </div>
+        <div class="field">
+          <label for="name">이름</label>
+          <input type="text" name="name" id="name" th:value="${name}" required/>
+        </div>
+        <div class="field">
+          <label for="phone">전화번호</label>
+          <input type="text" name="phone" id="phone" th:value="${phone}" required/>
+        </div>
+        <div class="field">
+          <label for="email">이메일</label>
+          <input type="email" name="email" id="email" th:value="${email}" required/>
+        </div>
+        <div class="field">
+          <label>주소</label>
+          <input type="button" onclick="sample4_execDaumPostcode()" value="우편번호 찾기">
+          <input type="text" id="sample4_postcode" placeholder="우편번호" name="sample4_postcode" th:value="${sample4_postcode}" required>
+          <input type="text" id="sample4_roadAddress" placeholder="도로명주소" size="60" name="sample4_roadAddress" th:value="${sample4_roadAddress}" required>
+          <input type="hidden" id="sample4_jibunAddress" placeholder="지번주소" size="60">
+          <span id="guide" style="color:#999;display:none"></span>
+          <input type="text" id="sample4_detailAddress" placeholder="상세주소" size="60" name="sample4_detailAddress" th:value="${sample4_detailAddress}" required>
+          <input type="hidden" id="sample4_extraAddress" placeholder="참고항목" size="60">
+          <input type="hidden" id="sample4_engAddress" placeholder="영문주소" size="60">
+        </div>
+      </div>
+      <div>
+        <ul class="actions">
+          <li><input type="button" value="수정하기" class="primary" onclick="validateForm();"/></li>
+          <li><input type="reset" value="내용재입력"></li>
+        </ul>
+      </div>
+    </form>
+
+
+
+  </div>
+
+
+  <!-- Copyright -->
+  <div id="copyright">
+    <ul>
+      <li>&copy; Untitled</li>
+      <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- Scripts -->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/jquery.scrollex.min.js"></script>
+<script src="/assets/js/jquery.scrolly.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+  // 유효성 검사 함수
+  function validateForm() {
+    var userId = document.forms["updateForm"]["userId"].value;
+    var password = document.forms["updateForm"]["password"].value;
+    var passwordCheck = document.forms["updateForm"]["passwordCheck"].value;
+    var name = document.forms["updateForm"]["name"].value;
+    var email = document.forms["updateForm"]["email"].value;
+    var phone = document.forms["updateForm"]["phone"].value;
+    //var address = document.forms["updateForm"]["address"].value;
+
+    // userId 영문 6글자 이상 검사
+    var userIdRegex = /^[a-zA-Z]{6,12}$/;
+    if (!userId.match(userIdRegex)) {
+      alert("영문으로 6글자 이상 12글자 이하의 아이디를 입력해주세요.");
+      return false;
+    }
+
+    // 비밀번호 확인
+    if (password != passwordCheck) {
+      alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+      return false;
+    }
+
+    //이름 유효성 검사
+    var nameRegex = /^[가-힣]{2,}$/;
+    if (!name.match(nameRegex)) {
+      alert("한글로만 이루어져야하며 2글자 이상으로 입력하세요.");
+      return false;
+    }
+
+    // 전화번호 유효성 검사
+    var phoneRegex = /^[0-9]{3}-[0-9]{3,4}-[0-9]{4}$/;
+    if (!phone.match(phoneRegex)) {
+      alert("올바른 전화번호 형식을 입력해주세요. (예: 010-1234-5678)");
+      return false;
+    }
+    // 이메일 유효성 검사
+    var emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (!email.match(emailRegex)) {
+      alert("올바른 이메일 주소를 입력해주세요.");
+      return false;
+    }
+
+    document.updateForm.submit();
+  }
+</script>
+<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+<script>
+  function sample4_execDaumPostcode() {
+    new daum.Postcode({
+      oncomplete: function (data) {
+
+        var roadAddr = data.roadAddress; // 도로명 주소 변수
+        var extraRoadAddr = ''; // 참고 항목 변수
+
+        // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+        // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+        if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+          extraRoadAddr += data.bname;
+        }
+        // 건물명이 있고, 공동주택일 경우 추가한다.
+        if (data.buildingName !== '' && data.apartment === 'Y') {
+          extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+        }
+        // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+        if (extraRoadAddr !== '') {
+          extraRoadAddr = ' (' + extraRoadAddr + ')';
+        }
+
+        // 우편번호와 주소 정보를 해당 필드에 넣는다.
+        document.getElementById('sample4_postcode').value = data.zonecode;
+        document.getElementById("sample4_roadAddress").value = roadAddr;
+        document.getElementById("sample4_jibunAddress").value = data.jibunAddress;
+
+        document.getElementById("sample4_engAddress").value = data.addressEnglish;
+
+        // 참고항목 문자열이 있을 경우 해당 필드에 넣는다.
+        if (roadAddr !== '') {
+          document.getElementById("sample4_extraAddress").value = extraRoadAddr;
+        } else {
+          document.getElementById("sample4_extraAddress").value = '';
+        }
+
+        var guideTextBox = document.getElementById("guide");
+        // 사용자가 '선택 안함'을 클릭한 경우, 예상 주소라는 표시를 해준다.
+        if (data.autoRoadAddress) {
+          var expRoadAddr = data.autoRoadAddress + extraRoadAddr;
+          guideTextBox.innerHTML = '(예상 도로명 주소 : ' + expRoadAddr + ')';
+          guideTextBox.style.display = 'block';
+
+        } else if (data.autoJibunAddress) {
+          var expJibunAddr = data.autoJibunAddress;
+          guideTextBox.innerHTML = '(예상 지번 주소 : ' + expJibunAddr + ')';
+          guideTextBox.style.display = 'block';
+        } else {
+          guideTextBox.innerHTML = '';
+          guideTextBox.style.display = 'none';
+        }
+      }
+    }).open();
+  }
+</script>
+<script>
+  // Attach event listener to the userId input field
+  $('#userId').on('input', function() {
+    checkDuplicateId();
+  });
+
+  function checkDuplicateId() {
+    let userId = $('#userId').val();
+
+    if (!/^[a-zA-Z]{6,12}$/.test(userId)) {
+      $('.error-message').text('영문으로 6글자 이상 12글자 이하의 아이디를 입력해주세요.').css('color', 'red').css('font-size','13px');
+      return;
+    }
+
+    $.ajax({
+      type: "GET",
+      url: "/api/members/checkDuplicateId?userId=" + userId,
+      success: function (response) {
+        if (response.duplicate) {
+          $('.error-message').text('사용 중인 ID입니다. 다른 ID를 입력해주세요.').css('color', 'red').css('font-size','13px');
+        } else {
+          $('.error-message').text('사용 가능한 ID입니다.').css('color', 'blue').css('font-size','13px');
+        }
+      },
+      error: function () {
+        $('.error-message').text('에러입니다.').css('color', 'red').css('font-size','13px');
+      }
+    });
+  }
+</script>
+
+
+</body>
+</html>

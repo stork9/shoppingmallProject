@@ -1,0 +1,251 @@
+<!DOCTYPE HTML>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<style>
+    .input-profile{
+        padding: 5px 5px;
+        background-color:#f5f5f5;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        width: 80px;
+        height: 30px;
+        margin:auto;
+    }
+    .update_btn{
+        padding: 4px 5px;
+        background-color:cornflowerblue;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        width: 85px;
+        height: 40px;
+        margin:auto;
+    }
+    .delete_btn{
+        padding: 4px 5px;
+        background-color:cornflowerblue;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        width: 85px;
+        height: 40px;
+        margin:auto;
+    }
+    .profile{
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+    * {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    .jb-box {
+        width: 100%;
+        height: 500px;
+        overflow: hidden;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    video {
+        width: 100%;
+    }
+
+    .jb-text {
+        position: absolute;
+        top: 50%;
+        width: 50%;
+    }
+
+    .jb-text p {
+        margin-top: -24px;
+        text-align: center;
+        font-size: 48px;
+        color: #fff;
+    }
+</style>
+<head>
+    <title>1조 쇼핑몰</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
+
+    <!--폰트-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper" class="fade-in">
+
+    <!-- Intro -->
+    <div id="intro">
+        <!-- 메인동영상 -->
+        <div class="jb-box">
+            <video muted autoplay loop>
+                <source src="/videos/main.mp4" type="video/mp4">
+                <strong>For Your Fashion</strong>
+            </video>
+            <div class="jb-text">
+                <p>Lorem Ipsum Dolor</p>
+            </div>
+        </div>
+
+        <!--
+        <h1>1조<br />
+        쇼핑몰</h1>
+        <p>참고자료<br><a href="https://html5up.net%22%3Ehtml5up/</a></p>
+        -->
+
+        <ul class="actions">
+            <li><a href="#header" class="button icon solid solo fa-arrow-down scrolly">Continue</a></li>
+        </ul>
+    </div>
+
+    <!-- Header -->
+    <header id="header">
+        <a href="/api/itemList/0" class="logo"><img src="/images/logo.png" width="300px"></a>
+    </header>
+
+    <nav id="nav">
+        <ul class="links">
+            <li><a href="/api/itemList/0">메인</a></li>
+            <li><a href="/api/itemList/top/0">상의</a></li>
+            <li><a href="/api/itemList/bottom/0">하의</a></li>
+            <li><a href="/api/itemList/accessory/0">악세서리</a></li>
+            <li><a href="/admin/postItem" sec:authorize="hasRole('ROLE_ADMIN')">상품 등록하기</a></li>
+            <li><a href="/api/boardList">게시판</a></li>
+        </ul>
+        <script>
+            function showSearch(){
+                var icon = document.getElementById("searchIcon");
+                icon.innerHTML = '<form action="/api/searchList/0"><li id="searchIcon"><input type="text" id="itemName" name="itemName"></li></form>';
+            }
+        </script>
+        <ul class="icons">
+            <li id="searchIcon"><a href="javascript:void(0);" onclick="showSearch()"><span class="label"><img src="/images/search.png" alt="검색" style="width: 45px; height: 45px;"></span></a></li>
+            <li sec:authorize="isAnonymous()"><a href="/api/login" ><span class="label"><img src="/images/join.png" alt="로그인" style="width: 40px; height: 40px;"></span></a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/user/mypage"><span class="label"><img src="/images/mypage.png" alt="마이페이지" style="width: 35px; height: 35px;"></span></a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/user/logout"><span class="label"><img src="/images/logout.png" alt="로그아웃" style="width: 35px; height: 35px;"></span></a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/user/cartPage"><span class="label"><img src="/images/cart.png" alt="장바구니" style="width: 35px; height: 35px;"></span></a></li>
+        </ul>
+    </nav>
+
+
+    <!-- Main -->
+    <div id="main">
+
+        <!-- Post -->
+        <section class="post">
+            <header class="major">
+                <span class="date">PROFILE</span>
+                <!--프로필 시작-->
+                <div class="profile" style="width:700px; height:400px; margin:auto;">
+                    <!--왼쪽부분-->
+                    <form th:action="@{/img_upload/{path}(path=${userId})}" method="post" enctype="multipart/form-data">
+                        <div style="width:200px; height:350px; float:left; margin-left:15px; margin-top:15px;">
+                            <div style="margin-top:20px;">
+                                <img th:src="@{/images/{path}(path=${savedNm})}" width="150px" height="150x" margin="auto" style="border-radius:70%"/>
+                            </div>
+
+                            <div>
+                                <label class="input-profile" for="input-file">
+                                    <b style="font-size:12px">사진선택</b>
+                                </label>
+                                <input type="file" name="file" id="input-file" style="display:none"/>
+                                <input type="submit" value="사진등록" style="height:37px; width:80px; font-size:12px; line-height:20px;
+                                                padding-left:10px; padding-right:10px;"/>
+                            </div>
+                            <div style="line-height: 17px; margin-top: 25px;">
+                                <b style="font-size:40px;" th:value="${name}">[[${name}]]</b><br>
+                                <b style="font-size:10px;" >[[${email}]]</b>
+                            </div>
+                        </div>
+                    </form>
+                    <!--오른쪽부분-->
+                    <div style="width:57%; height:70%; margin: 10px 40px; float:left; background-color:#f5f5f5;
+                            padding-top:20px; position:relative;">
+
+                        <div style="float:left; border-left:thin solid darkgray; height:70%; margin-left:75px; margin-top:15px; position:absolute;"></div>
+
+                        <div style="float:left; text-align:left; margin-left:35%; position:absolute; width:250px; height: 250px; line-height: 17px;">
+                            <b style="font-size:1px">Name</b><br>
+                            <b style="font-size:20px">[[${name}]]</b><br><br>
+
+                            <b style="font-size:1px">Address</b><br>
+                            <b style="font-size:20px">[[${address}]]</b><br><br>
+
+                            <b style="font-size:1px">H.P</b><br>
+                            <b style="font-size:20px">[[${phone}]]</b><br><br>
+
+                            <b style="font-size:1px">E-mail</b><br>
+                            <b style="font-size:20px">[[${email}]]</b><br><br>
+                        </div>
+
+                    </div>
+
+                    <form action="#" style="float:right; margin-right:45px;" >
+                        <input type="button" id="update" value="회원수정" onclick="location.href='/user/updatemember'"/>
+                        <input type="button" id="delete" value="회원탈퇴" onclick="deleteMember()"/>
+                    </form>
+
+                </div><!--전체끝-->
+
+            </header>
+        </section>
+
+    </div>
+
+
+    <!-- Copyright -->
+    <div id="copyright">
+        <ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+    </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/jquery.scrollex.min.js"></script>
+<script src="/assets/js/jquery.scrolly.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+
+<script>
+    function deleteMember() {
+        if (confirm("정말로 회원 탈퇴하시겠습니까?")) {
+            fetch('/user/profile', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("회원 탈퇴되었습니다.");
+                        location.href = '/logout';
+                    } else {
+                        alert("회원 탈퇴에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("회원 탈퇴 요청 중 오류 발생:", error);
+                    alert("회원 탈퇴 요청 중 오류가 발생했습니다.");
+                });
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <title>1조 쇼핑몰</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+</head>
+<style>
+  * {
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .jb-box {
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  video {
+    width: 100%;
+  }
+
+  .jb-text {
+    position: absolute;
+    top: 50%;
+    width: 50%;
+  }
+
+  .jb-text p {
+    margin-top: -24px;
+    text-align: center;
+    font-size: 48px;
+    color: #fff;
+  }
+  .mypage{list-style: none; width:50%; margin: auto;}
+  #memberDelete{float: right;}
+  #user{width: 100px;
+    height: 100px;}
+</style>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper" class="fade-in">
+
+  <!-- Intro -->
+  <div id="intro">
+    <!-- 메인동영상 -->
+    <div class="jb-box">
+      <video muted autoplay loop>
+        <source src="/videos/main.mp4" type="video/mp4">
+        <strong>For Your Fashion</strong>
+      </video>
+      <div class="jb-text">
+        <p>Lorem Ipsum Dolor</p>
+      </div>
+    </div>
+
+    <!--
+    <h1>1조<br />
+    쇼핑몰</h1>
+    <p>참고자료<br><a href="https://html5up.net%22%3Ehtml5up/</a></p>
+    -->
+
+    <ul class="actions">
+      <li><a href="#header" class="button icon solid solo fa-arrow-down scrolly">Continue</a></li>
+    </ul>
+  </div>
+
+  <!-- Header -->
+  <header id="header">
+    <a href="/api/itemList/0" class="logo"><img src="/images/logo.png" width="300px"></a>
+  </header>
+
+  <nav id="nav">
+    <ul class="links">
+      <li><a href="/api/itemList/0">메인</a></li>
+      <li><a href="/api/itemList/top/0">상의</a></li>
+      <li><a href="/api/itemList/bottom/0">하의</a></li>
+      <li><a href="/api/itemList/accessory/0">악세서리</a></li>
+      <li><a href="/admin/postItem" sec:authorize="hasRole('ROLE_ADMIN')">상품 등록하기</a></li>
+      <li><a href="/api/boardList">게시판</a></li>
+    </ul>
+    <script>
+      function showSearch(){
+        var icon = document.getElementById("searchIcon");
+        icon.innerHTML = '<form action="/api/searchList/0"><li id="searchIcon"><input type="text" id="itemName" name="itemName"></li></form>';
+      }
+    </script>
+    <ul class="icons">
+      <li id="searchIcon"><a href="javascript:void(0);" onclick="showSearch()"><span class="label"><img src="/images/search.png" alt="검색" style="width: 45px; height: 45px;"></span></a></li>
+      <li sec:authorize="isAnonymous()"><a href="/api/login" ><span class="label"><img src="/images/join.png" alt="로그인" style="width: 40px; height: 40px;"></span></a></li>
+      <li sec:authorize="isAuthenticated()"><a href="/user/mypage"><span class="label"><img src="/images/mypage.png" alt="마이페이지" style="width: 35px; height: 35px;"></span></a></li>
+      <li sec:authorize="isAuthenticated()"><a href="/user/logout"><span class="label"><img src="/images/logout.png" alt="로그아웃" style="width: 35px; height: 35px;"></span></a></li>
+      <li sec:authorize="isAuthenticated()"><a href="/user/cartPage"><span class="label"><img src="/images/cart.png" alt="장바구니" style="width: 35px; height: 35px;"></span></a></li>
+    </ul>
+  </nav>
+
+  <!-- Main -->
+  <div id="main">
+
+    <!-- Featured Post -->
+    <article class="post featured">
+      <div>
+        <h1><img src="/images/user.png" id="user">[[${name}]]</span></h1>
+      </div>
+      <br>
+      <ul class="mypage">
+      <li><a href="/user/profile" class="button primary fit">프로필</a></li><br><br>
+
+      </ul>
+    </article>
+
+
+  </div>
+
+
+<!-- Copyright -->
+<div id="copyright">
+  <ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+</div>
+</div>
+
+<!-- Scripts -->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/jquery.scrollex.min.js"></script>
+<script src="/assets/js/jquery.scrolly.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+
+</body>
+</html>

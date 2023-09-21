@@ -1,0 +1,195 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <title>1조 쇼핑몰</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+</head>
+<script>
+  $(document).ready(function () {
+    getMessages();
+  })
+  function getMessages() {
+    $('#board').empty();
+    $.ajax({
+      type: "GET",
+      url: "/api/boards",
+      data: {},
+      success: function (response) {
+        for (let message of response) {
+          let id = message['id'];
+          let author = message['author'];
+          let title = message['title'];
+          let contents = message['contents'];
+          let modifiedAt = message['modifiedAt'];
+          let category = message['category'];
+          addHTML(id, author,title, contents, modifiedAt,category);
+        }
+      }
+    });
+  }
+  function addHTML(id, author, title, contents, modifiedAt, category) {
+    let tempHtml = makeBoard(id, author, title, contents, modifiedAt, category);
+
+
+    if (category === '공지사항'){
+      $('#board-body').prepend(tempHtml);
+    } else {
+      $('#board-body').append(tempHtml);
+
+    }
+    // $('#board-body').append(tempHtml);
+  }
+  function makeBoard(id, author, title, contents, modifiedAt , category){
+    return `<tr>
+              <td>${id}</td>
+              <td>${category}</td>
+              <td><a href="/api/boards/${id}">${title}</a></td>
+              <td>${author}</td>
+              <td>${modifiedAt}</td>
+            </tr>`;
+  }
+</script>
+<style>
+  #board-body {
+    font-size: 18px;
+  }
+
+
+  * {
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .jb-box {
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  video {
+    width: 100%;
+  }
+
+  .jb-text {
+    position: absolute;
+    top: 50%;
+    width: 50%;
+  }
+
+  .jb-text p {
+    margin-top: -24px;
+    text-align: center;
+    font-size: 48px;
+    color: #fff;
+  }
+</style>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper" class="fade-in">
+
+  <!-- Intro -->
+  <div id="intro">
+    <!-- 메인동영상 -->
+    <div class="jb-box">
+      <video muted autoplay loop>
+        <source src="/videos/main.mp4" type="video/mp4">
+        <strong>For Your Fashion</strong>
+      </video>
+      <div class="jb-text">
+        <p>Lorem Ipsum Dolor</p>
+      </div>
+    </div>
+
+    <!--
+    <h1>1조<br />
+    쇼핑몰</h1>
+    <p>참고자료<br><a href="https://html5up.net%22%3Ehtml5up/</a></p>
+    -->
+
+    <ul class="actions">
+      <li><a href="#header" class="button icon solid solo fa-arrow-down scrolly">Continue</a></li>
+    </ul>
+  </div>
+
+  <!-- Header -->
+  <!-- Header -->
+  <header id="header">
+    <a href="/api/itemList/0" class="logo"><img src="/images/logo.png" width="300px"></a>
+  </header>
+
+  <nav id="nav">
+    <ul class="links">
+      <li><a href="/api/itemList/0">메인</a></li>
+      <li><a href="/api/itemList/top/0">상의</a></li>
+      <li><a href="/api/itemList/bottom/0">하의</a></li>
+      <li><a href="/api/itemList/accessory/0">악세서리</a></li>
+      <li><a href="/admin/postItem" sec:authorize="hasRole('ROLE_ADMIN')">상품 등록하기</a></li>
+      <li class="active"><a href="/api/boardList">게시판</a></li>
+    </ul>
+    <script>
+      function showSearch(){
+        var icon = document.getElementById("searchIcon");
+        icon.innerHTML = '<form action="/api/searchList/0"><li id="searchIcon"><input type="text" id="itemName" name="itemName"></li></form>';
+      }
+    </script>
+    <ul class="icons">
+      <li id="searchIcon"><a href="javascript:void(0);" onclick="showSearch()"><span class="label"><img src="/images/search.png" alt="검색" style="width: 45px; height: 45px;"></span></a></li>
+      <li sec:authorize="isAnonymous()"><a href="/api/login" ><span class="label"><img src="/images/join.png" alt="로그인" style="width: 40px; height: 40px;"></span></a></li>
+      <li sec:authorize="isAuthenticated()"><a href="/user/mypage"><span class="label"><img src="/images/mypage.png" alt="마이페이지" style="width: 35px; height: 35px;"></span></a></li>
+      <li sec:authorize="isAuthenticated()"><a href="/user/logout"><span class="label"><img src="/images/logout.png" alt="로그아웃" style="width: 35px; height: 35px;"></span></a></li>
+      <li sec:authorize="isAuthenticated()"><a href="/user/cartPage"><span class="label"><img src="/images/cart.png" alt="장바구니" style="width: 35px; height: 35px;"></span></a></li>
+    </ul>
+  </nav>
+
+  <!-- Main -->
+  <div id="main">
+
+    <!-- Featured Post -->
+    <h2>게시판</h2>
+    <div class="table-wrapper">
+      <table class="alt" style="text-align: center">
+        <thead>
+        <tr>
+          <th>No.</th>
+          <th>카테고리(Category)</th>
+          <th>제목(Title)</th>
+          <th>작성자(Author)</th>
+          <th>작성일(WriteDate)</th>
+        </tr>
+        </thead>
+        <tbody id="board-body">
+
+        </tbody>
+        <tfoot>
+        <td><a href="/admin/writerBoard" class="button primary" sec:authorize="hasRole('ROLE_ADMIN')">작성하기</a></td>
+        </tfoot>
+      </table>
+    </div>
+
+
+
+  </div>
+  <!-- Copyright -->
+  <div id="copyright">
+    <ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/jquery.scrollex.min.js"></script>
+<script src="/assets/js/jquery.scrolly.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+
+</body>
+</html>
